@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: openhorizon-agent
+
+resources:
+  - namespace.yaml
+  - clusterrolebinding.yaml
+  - serviceaccount.yaml
+  - job.yaml
+
+secretGenerator:
+  - name: ieam-provisioner-config
+    namespace: openhorizon-agent
+    files:
+      - ieam_provisioning_vars.yaml

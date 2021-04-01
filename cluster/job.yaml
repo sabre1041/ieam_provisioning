@@ -1,0 +1,53 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ieam-provisioner
+  namespace: openhorizon-agent
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+        - image: quay.io/ablock/ansible-k8s-ee:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Provisioning IEAM Cluster"
+
+              git clone https://github.com/sabre1041/ieam_ansible
+
+              cd ieam_ansible
+
+              echo "localhost ansible_connection=local" >> inventory/hosts
+
+              ansible-playbook -i inventory playbooks/ieam.yml -e @/etc/ieam-config/ieam_provisioning_vars.yaml -e ansible_python_interpreter=/usr/bin/python3
+
+          imagePullPolicy: IfNotPresent
+          name: ieam-provisioner
+          resources:
+            requests:
+              cpu: 300m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - name: ieam-config
+              mountPath: /etc/ieam-config
+              readOnly: true
+            - name: tmp-dir
+              mountPath: /tmp/horizon
+      restartPolicy: Never
+      serviceAccount: ieam-provisioner
+      serviceAccountName: ieam-provisioner
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: tmp-dir
+          emptyDir: {}
+        - name: ieam-config
+          secret:
+            secretName: ieam-provisioner-config

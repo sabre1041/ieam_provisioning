@@ -1,0 +1,15 @@
+---
+# Hub Cluster Configuration
+ieam_cluster_url: ""
+ieam_api_key: ""
+ieam_organization: ""
+
+# Edge Cluster Configuration
+ieam_node_name: ""
+
+# Optional Pattern
+#ieam_pattern: "IBM/pattern-ibm.helloworld"
+
+# Misc Configurations
+ieam_download_clis: false
+ieam_cluster_install_skopeo: false
